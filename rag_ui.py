@@ -49,4 +49,9 @@ def real_llm_response(query, context_chunks):
 def simulate_llm_response(query, context):
     return f" Simulated response to '{query}' based on retrieved context."
 
+# Streamlit UI
+st.title("RAG Query UI & Orchestrator (Simulated)")
+st.markdown("This app simulates a basic RAG pipeline with placeholders for future integration.")
+
+chunks = []
 
