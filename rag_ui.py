@@ -93,5 +93,14 @@ if query:
     st.subheader("🧠 LLM Response")
     st.write(response)
 
+# Display integration placeholders
+st.sidebar.title("🔧 Future Integrations")
+for key, value in INTEGRATIONS.items():
+    if isinstance(value, dict):
+        st.sidebar.subheader(key)
+        for subkey, subvalue in value.items():
+            st.sidebar.text(f"{subkey}: {subvalue}")
+    else:
+        st.sidebar.text(f"{key}: {value}")
 
 
