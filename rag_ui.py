@@ -80,3 +80,18 @@ elif use_sample:
     text = sample_text
     chunks = simulate_chunking(text)
 
+# Query input
+query = st.text_input("Enter your query:")
+if query:
+    retrieved_chunks = simulate_retrieval(chunks, query)
+    response = simulate_llm_response(query, retrieved_chunks)
+
+    st.subheader("📄 Retrieved Context")
+    for i, chunk in enumerate(retrieved_chunks):
+        st.text_area(f"Chunk {i+1}", chunk, height=100)
+
+    st.subheader("🧠 LLM Response")
+    st.write(response)
+
+
+
