@@ -33,7 +33,7 @@ def simulate_chunking(text, chunk_size=300):
 def simulate_retrieval(chunks, query):
     return [chunk for chunk in chunks if query.lower() in chunk.lower()]
 
-def real_llm_response(query, context_chunks)
+def real_llm_response(query, context_chunks):
     context = "\n\n".join(context_chunks)
     prompt = f"Answer the following query based on the context: \n\nContext: \n{context}\n\nQuery: {query}"
 
