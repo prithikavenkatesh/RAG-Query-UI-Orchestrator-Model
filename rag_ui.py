@@ -55,3 +55,28 @@ st.markdown("This app simulates a basic RAG pipeline with placeholders for futur
 
 chunks = []
 
+# File upload or sample PDF
+uploaded_file = st.file_uploader("Upload a PDF document", type=["pdf"])
+use_sample = st.checkbox("Use sample PDF (Introduction to Renewable Energy)")
+
+if uploaded_file:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+        tmp_file.write(uploaded_file.read())
+        pdf_path = tmp_file.name
+    text = extract_text_from_pdf(pdf_path)
+    st.write("Extracted Text Preview:", text[:1000])
+    chunks = simulate_chunking(text)
+
+elif use_sample:
+    sample_text = """
+    Introduction to Renewable Energy
+
+    Renewable energy is derived from natural sources that are replenished constantly. Examples include solar, wind, hydro, geothermal, and biomass. These sources are considered sustainable and environmentally friendly compared to fossil fuels.
+
+    Solar energy harnesses sunlight using photovoltaic cells. Wind energy uses turbines to convert wind into electricity. Hydropower utilizes flowing water to generate power. Geothermal taps into the Earth's heat, and biomass uses organic materials.
+
+    The transition to renewable energy is crucial for reducing greenhouse gas emissions and combating climate change. Governments and industries are investing in clean energy technologies to build a sustainable future.
+    """
+    text = sample_text
+    chunks = simulate_chunking(text)
+
