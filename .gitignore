@@ -1,8 +1,22 @@
 
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.DS_Store
-.env
 venv/
+env/
+rag-env/
+
+# Streamlit artifacts
+.streamlit/
+Streamlit-RAGModel_files/
+Streamlit-RAGModel.html
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Logs and temp files
+*.log
+*.tmp

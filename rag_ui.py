@@ -1,7 +1,10 @@
 import streamlit as st
 import fitz # PyMuPDF
 import tempfile
-import openai
+import time
+
+#from langchain_ollama import ChatOllama
+from langchain_community.chat_models import ChatOllama
 
 # Simulated placeholders for future integrations
 INTEGRATIONS = {
@@ -33,7 +36,7 @@ def simulate_chunking(text, chunk_size=300):
 def simulate_retrieval(chunks, query):
     return [chunk for chunk in chunks if query.lower() in chunk.lower()]
 
-def real_llm_response(query, context_chunks):
+# def real_llm_response(query, context_chunks):
     context = "\n\n".join(context_chunks)
     prompt = f"Answer the following query based on the context: \n\nContext: \n{context}\n\nQuery: {query}"
 
@@ -45,6 +48,15 @@ def real_llm_response(query, context_chunks):
         ]
     )
     return response['choice'][0]['message']['content']
+
+
+def real_llm_response(query, context_chunks):
+    context = "\n\n".join(context_chunks)
+    prompt = f"Answer the following query based on the context:\n\n{context}\n\nQuery: {query}"
+    llm = ChatOllama(model="gemma:2b")
+    response = llm.invoke(prompt)
+    return response.content
+
 
 def simulate_llm_response(query, context):
     return f" Simulated response to '{query}' based on retrieved context."
@@ -82,9 +94,20 @@ elif use_sample:
 
 # Query input
 query = st.text_input("Enter your query:")
+use_real_llm = st.checkbox("Use real LLM (Ollama)", value=True)
+
 if query:
     retrieved_chunks = simulate_retrieval(chunks, query)
-    response = simulate_llm_response(query, retrieved_chunks)
+    #response = simulate_llm_response(query, retrieved_chunks)
+    #Choose between real or simulated LLM
+    if use_real_llm:
+        try:
+            response = real_llm_response(query, retrieved_chunks)
+        except Exception as e:
+            st.error(f"LLM invocation failed: {e}")
+            response = simulate_llm_response(query, retrieved_chunks)
+    else:
+        response = real_llm_response(query, retrieved_chunks)
 
     st.subheader("📄 Retrieved Context")
     for i, chunk in enumerate(retrieved_chunks):
@@ -94,7 +117,7 @@ if query:
     st.write(response)
 
 # Display integration placeholders
-st.sidebar.title("🔧 Future Integrations")
+st.sidebar.title("🔧 Future Integrated Integrations")
 for key, value in INTEGRATIONS.items():
     if isinstance(value, dict):
         st.sidebar.subheader(key)
@@ -102,5 +125,7 @@ for key, value in INTEGRATIONS.items():
             st.sidebar.text(f"{subkey}: {subvalue}")
     else:
         st.sidebar.text(f"{key}: {value}")
+
+
 
 
