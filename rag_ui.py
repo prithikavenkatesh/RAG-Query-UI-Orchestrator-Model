@@ -138,9 +138,8 @@ elif use_sample:
 
 # Query input
 query = st.text_input("Enter your query:")
-use_real_llm = st.checkbox("Use real LLM (Ollama)", value=True)
-
-use_embedding_retrieval = st.checkbox("Use embedding-based retrieval", value=True)
+use_real_llm = True
+use_embedding_retrieval = True
 
 
 if query:
