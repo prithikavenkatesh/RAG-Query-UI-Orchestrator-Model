@@ -3,7 +3,14 @@ from langchain_ollama import ChatOllama
 import time
 
 # Initialize the Ollama model
-llm = ChatOllama(model="gemma:2b")
+#llm = ChatOllama(model="gemma:2b")
+
+
+llm = ChatOllama(
+    model="deepseek-r1:1.5b",  # or any model available on your server
+    base_url="http://10.10.70.57:11434"
+)
+
 
 # List of prompts to test
 prompts = [

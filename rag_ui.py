@@ -33,8 +33,19 @@ def simulate_chunking(text, chunk_size=300):
     return chunks
 
 
+# def simulate_retrieval(chunks, query):
+    #return [chunk for chunk in chunks if query.lower() in chunk.lower()]
+
+
 def simulate_retrieval(chunks, query):
-    return [chunk for chunk in chunks if query.lower() in chunk.lower()]
+    query_keywords = set(query.lower().split())
+    retrieved = []
+    for chunk in chunks:
+        chunk_words = set(chunk.lower().split())
+        if query_keywords & chunk_words:  # if there's any overlap
+            retrieved.append(chunk)
+    return retrieved
+
 
 # def real_llm_response(query, context_chunks):
     context = "\n\n".join(context_chunks)
@@ -50,10 +61,14 @@ def simulate_retrieval(chunks, query):
     return response['choice'][0]['message']['content']
 
 
+
 def real_llm_response(query, context_chunks):
     context = "\n\n".join(context_chunks)
     prompt = f"Answer the following query based on the context:\n\n{context}\n\nQuery: {query}"
-    llm = ChatOllama(model="gemma:2b")
+    llm = ChatOllama(
+        model="deepseek-r1:1.5b",  # ✅ This model is confirmed to be available
+        base_url="http://10.10.70.57:11434"
+    )
     response = llm.invoke(prompt)
     return response.content
 
