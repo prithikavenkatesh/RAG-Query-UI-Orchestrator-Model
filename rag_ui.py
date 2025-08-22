@@ -2,6 +2,35 @@ import streamlit as st
 import fitz # PyMuPDF
 import tempfile
 import time
+import requests
+import numpy as np
+
+
+OLLAMA_EMBEDDING_URL = "http://10.10.70.57:11434/api/embeddings"
+EMBEDDING_MODEL = "inke/Qwen3-Embedding-0.6B:latest"
+
+def get_embedding(text):
+    response = requests.post(OLLAMA_EMBEDDING_URL, json={
+        "model": EMBEDDING_MODEL,
+        "prompt": text
+    })
+    response.raise_for_status()
+    return response.json()["embedding"]
+
+def cosine_similarity(vec1, vec2):
+    vec1 = np.array(vec1)
+    vec2 = np.array(vec2)
+    return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
+
+def embedding_based_retrieval(chunks, query, top_k=3):
+    query_embedding = get_embedding(query)
+    chunk_embeddings = [get_embedding(chunk) for chunk in chunks]
+
+    similarities = [cosine_similarity(query_embedding, emb) for emb in chunk_embeddings]
+    ranked_chunks = sorted(zip(chunks, similarities), key=lambda x: x[1], reverse=True)
+
+    return [chunk for chunk, score in ranked_chunks[:top_k]]
+
 
 #from langchain_ollama import ChatOllama
 from langchain_community.chat_models import ChatOllama
@@ -111,8 +140,18 @@ elif use_sample:
 query = st.text_input("Enter your query:")
 use_real_llm = st.checkbox("Use real LLM (Ollama)", value=True)
 
+use_embedding_retrieval = st.checkbox("Use embedding-based retrieval", value=True)
+
+
 if query:
-    retrieved_chunks = simulate_retrieval(chunks, query)
+    if use_embedding_retrieval:
+        try:
+            retrieved_chunks = embedding_based_retrieval(chunks, query, top_k=3)
+        except Exception as e:
+            st.error(f"Embedding retrieval failed: {e}")
+            retrieved_chunks = simulate_retrieval(chunks, query)
+    else:
+        retrieved_chunks = simulate_retrieval(chunks, query)
     #response = simulate_llm_response(query, retrieved_chunks)
     #Choose between real or simulated LLM
     if use_real_llm:
